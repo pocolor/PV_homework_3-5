@@ -2,6 +2,11 @@
 
 from pprint import pprint
 from collections.abc import MutableSequence, Iterable
+import sys
+
+
+def clamp(value, minimum, maximum):
+    return max(minimum, min(value, maximum))
 
 
 class DictList(MutableSequence):
@@ -28,11 +33,24 @@ class DictList(MutableSequence):
 
         self._dict[self._sanit_index(index)] = value
 
+    def __delitem__(self, index):
+        raise NotImplemented
+
     def __len__(self):
         return len(self._dict)
 
     def __iter__(self):
-        return iter(self._dict.values())
+        return iter(self._index_gen())
+
+    def __str__(self):
+        return str(list(self))
+
+    def __repr__(self):
+        return str(self)
+
+    def _index_gen(self):
+        for i in range(len(self)):
+            yield self[i]
 
     def _sanit_index(self, index):
         if index < 0:
@@ -54,7 +72,7 @@ class DictList(MutableSequence):
 
     def count(self, element):
         counter = 0
-        for e in self._dict.values():
+        for e in self:
             if e == element:
                 counter += 1
         return counter
@@ -62,17 +80,16 @@ class DictList(MutableSequence):
     def extend(self, iterable):
         self._dict = dict(enumerate((*self, *iterable)))
 
-    def index(self, element, start = 0, stop = len(self)):
-        for i in range(start, math.clamp(stop, 0, len(self))):
+    def index(self, element, start = 0, stop = sys.maxsize):
+        for i in range(start, clamp(stop, 0, len(self))):
             if self[i] == element:
                 return i
 
         raise ValueError
 
-    def insert(self, index, element):
-        for i in range(self._sanit_index(index), len(self)):
-            ...
-    
+    def insert(self, index, value):
+        raise NotImplemented
+
 
 def main() -> None:
 
@@ -82,10 +99,27 @@ def main() -> None:
     
     def print_both() -> None:
         pprint(my_list)
-        pprint([my_dict[i] for i in range(len(my_dict))])
+        pprint(my_dict)
+
+    
+    print_both()
+
+    my_list.append("foo")
+    my_dict.append("foo")
+
+    print_both()
+
+    print(my_list[1])
+    print(my_dict[1])
+
+    print_both()
+
+    my_list[-1] = 0
+    my_dict[-1] = 0
+
+    print_both()
 
 
 if __name__ == "__main__":
-    print(dir(list))
     main()
 
