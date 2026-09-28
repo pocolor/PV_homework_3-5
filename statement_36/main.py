@@ -1,12 +1,22 @@
 #!./.venv/bin/python3
 
+import random
+
+
+def print_ldb(ldb) -> None:
+    for i, e in enumerate(ldb, start=1):
+        print(f"{i}. {e}")
+
 
 def main() -> None:
-    my_tuple = "foo", "bar", "baz"
-    my_list = list(my_tuple)
+    leaderboard = ["pingu", "dave", "john"]
 
-    my_list[0] = "noot"
-    my_tuple[0] = "noot"
+    print_ldb(leaderboard)
+
+    random.shuffle(leaderboard)
+
+    print("\nafter shuffling")
+    print_ldb(leaderboard)
 
 
 if __name__ == "__main__":
